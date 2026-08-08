@@ -75,7 +75,7 @@ button{font-family:inherit;cursor:pointer}
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
 .hero-bg{position:absolute;inset:0;background:url('img/hero-bg.png') center/cover no-repeat;filter:brightness(.55) saturate(.9)}
 .hero-scrim{position:absolute;inset:0;background:linear-gradient(180deg,oklch(0.16 0.008 60/0.6),oklch(0.16 0.008 60/0.92) 70%,var(--bg))}
-.hero-inner{position:relative;z-index:2;padding-block:120px}
+.hero-inner{position:relative;z-index:2;padding-block:120px;text-align:left}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.8rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:28px}
 .hero-eyebrow::before{content:'';width:34px;height:1px;background:var(--gold)}
 .mask-line{display:block;overflow:hidden}
@@ -85,7 +85,7 @@ button{font-family:inherit;cursor:pointer}
 .hero-title .gold{color:var(--gold-strong);font-style:italic}
 .hero-sub{max-width:560px;font-size:1.12rem;color:var(--text-dim);line-height:1.6;margin-bottom:40px}
 .hero-actions{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-.hero-stats{display:flex;gap:48px;margin-top:64px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:48px;margin-top:64px;flex-wrap:nowrap}
 .stat{display:flex;flex-direction:column}
 .stat-num{font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:var(--gold-strong);line-height:1.1}
 .stat-label{font-size:.82rem;color:var(--text-dim);letter-spacing:.05em;text-transform:uppercase;margin-top:6px}
@@ -161,11 +161,12 @@ button{font-family:inherit;cursor:pointer}
 .testi{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:16px}
 .testi-stars{color:var(--gold-strong);letter-spacing:.15em;font-size:1rem}
 .testi-text{color:var(--text);font-size:.98rem;line-height:1.6;font-style:italic}
-.testi-author{display:flex;align-items:center;gap:12px;margin-top:auto}
+.testi-author{display:flex;align-items:center;gap:12px;margin-top:auto;min-width:0}
 .testi-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none}
 .testi-avatar img{width:100%;height:100%;object-fit:cover}
-.testi-author strong{display:block;font-weight:600;font-size:.95rem}
-.testi-author span{font-size:.8rem;color:var(--text-dim)}
+.testi-author > div:last-child{min-width:0;overflow:hidden}
+.testi-author strong{display:block;font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.testi-author span{font-size:.8rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ============ FAQ (accordion) ============ */
 .faq-list{max-width:760px;display:flex;flex-direction:column;gap:12px}
@@ -207,7 +208,17 @@ button{font-family:inherit;cursor:pointer}
   .masters .split{grid-template-columns:1fr}
   .showcase{grid-template-columns:1fr}
   .footer-inner{grid-template-columns:1fr;gap:32px}
-  .hero-stats{gap:32px}
+}
+@media(max-width:640px){
+  .hero-inner{text-align:center;padding-block:110px 80px}
+  .hero-eyebrow{justify-content:center}
+  .hero-eyebrow::before{display:none}
+  .hero-sub{margin-inline:auto}
+  .hero-actions{justify-content:center}
+  .hero-actions .btn{flex:1 1 auto;min-width:200px}
+  .hero-stats{gap:24px;justify-content:center}
+  .stat-num{font-size:1.7rem}
+  .stat-label{font-size:.72rem}
 }
 </style>
 </head>
@@ -360,15 +371,15 @@ button{font-family:inherit;cursor:pointer}
     </div>
     <div class="masters-grid">
       <div class="master reveal">
-        <div class="master-img"><img src="img/master-1.webp" alt="Артём" loading="lazy"></div>
+        <div class="master-img"><img src="img/barber-1.png" alt="Артём" loading="lazy"></div>
         <div class="master-body"><h3>Артём</h3><div class="master-role">Основатель · топ-барбер</div><p>12 лет опыта. Мастер спорта по ножницам.</p></div>
       </div>
       <div class="master reveal">
-        <div class="master-img"><img src="img/master-2.webp" alt="Дмитрий" loading="lazy"></div>
+        <div class="master-img"><img src="img/barber-2.png" alt="Дмитрий" loading="lazy"></div>
         <div class="master-body"><h3>Дмитрий</h3><div class="master-role">Барбер-стилист</div><p>Сложные укладки и работа с бородой.</p></div>
       </div>
       <div class="master reveal">
-        <div class="master-img"><img src="img/master-3.webp" alt="Максим" loading="lazy"></div>
+        <div class="master-img"><img src="img/barber-3.png" alt="Максим" loading="lazy"></div>
         <div class="master-body"><h3>Максим</h3><div class="master-role">Барбер-универсал</div><p>Король классического бритья и переходов.</p></div>
       </div>
     </div>
@@ -398,17 +409,17 @@ button{font-family:inherit;cursor:pointer}
       <div class="testi reveal">
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">«Лучший барбершоп в городе. Артём сделал идеальную стрижку, учёл все пожелания. Атмосфера — огонь!»</p>
-        <div class="testi-author"><div class="testi-avatar"><img src="img/master-1.webp" alt="Алексей"></div><div><strong>Алексей</strong><span>Клиент BRUTUS</span></div></div>
+        <div class="testi-author"><div class="testi-avatar"><img src="img/barber-1.png" alt="Алексей"></div><div><strong>Алексей</strong><span>Клиент BRUTUS</span></div></div>
       </div>
       <div class="testi reveal">
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">«Королевское бритьё — отдельный вид искусства. Расслабляет так, что не хочется уходить. Обязательно вернусь!»</p>
-        <div class="testi-author"><div class="testi-avatar"><img src="img/master-2.webp" alt="Дмитрий"></div><div><strong>Дмитрий</strong><span>Постоянный гость</span></div></div>
+        <div class="testi-author"><div class="testi-avatar"><img src="img/barber-2.png" alt="Дмитрий"></div><div><strong>Дмитрий</strong><span>Постоянный гость</span></div></div>
       </div>
       <div class="testi reveal">
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">«Вожу сына на стрижку уже второй год. Ребёнок обожает Максима, а я ценю качество и подход. Спасибо, BRUTUS!»</p>
-        <div class="testi-author"><div class="testi-avatar"><img src="img/master-3.webp" alt="Сергей"></div><div><strong>Сергей</strong><span>Клиент с 2023</span></div></div>
+        <div class="testi-author"><div class="testi-avatar"><img src="img/barber-3.png" alt="Сергей"></div><div><strong>Сергей</strong><span>Клиент с 2023</span></div></div>
       </div>
     </div>
   </div>
