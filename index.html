@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRUTUS — Барбершоп. Мужество в каждой детали.</title>
+<meta name="description" content="BRUTUS — премиальный барбершоп. Мужские стрижки, королевское бритьё, оформление бороды. Запись в Telegram за 30 секунд.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg: oklch(0.16 0.008 60);          /* deep charcoal */
+  --bg-2: oklch(0.20 0.01 55);
+  --bg-3: oklch(0.24 0.012 50);
+  --surface: oklch(0.22 0.01 55);
+  --surface-2: oklch(0.27 0.012 52);
+  --text: oklch(0.95 0.01 80);         /* warm white */
+  --text-dim: oklch(0.72 0.02 70);
+  --gold: oklch(0.78 0.13 75);         /* brass/gold accent */
+  --gold-strong: oklch(0.85 0.16 80);
+  --gold-dim: oklch(0.65 0.09 70);
+  --danger: oklch(0.55 0.02 60);
+  --line: oklch(0.34 0.014 55);
+  --line-soft: oklch(0.30 0.012 55);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow-1: 0 1px 2px oklch(0 0 0 / 0.2), 0 4px 12px oklch(0 0 0 / 0.25);
+  --shadow-2: 0 2px 4px oklch(0 0 0 / 0.22), 0 12px 32px oklch(0 0 0 / 0.35);
+  --pad: clamp(20px, 5vw, 64px);
+  --maxw: 1180px;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:400;line-height:1.6;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.container{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+
+/* ============ CURSOR (originkit: circle cursor) ============ */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-dot{width:6px;height:6px;background:var(--gold-strong)}
+.cursor-ring{width:36px;height:36px;border:1px solid oklch(0.78 0.13 75 / 0.5);transition:width .25s ease,height .25s ease,border-color .25s ease}
+.cursor-ring.is-active{width:58px;height:58px;border-color:var(--gold)}
+@media(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}
+
+/* ============ HEADER ============ */
+.site-header{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .35s ease,box-shadow .35s ease;padding-block:18px}
+.site-header.scrolled{background:oklch(0.16 0.008 60 / 0.85);backdrop-filter:blur(14px);box-shadow:var(--shadow-1)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.logo{font-family:var(--font-display);font-weight:900;font-size:1.6rem;letter-spacing:.14em;color:var(--text)}
+.logo span{color:var(--gold)}
+.site-nav{display:flex;gap:32px;align-items:center}
+.site-nav a{font-size:.92rem;font-weight:500;color:var(--text-dim);letter-spacing:.02em;transition:color .2s ease}
+.site-nav a:hover{color:var(--gold-strong)}
+.nav-cta{font-weight:600;color:var(--text)!important;padding:10px 20px;background:var(--gold);border-radius:var(--radius-sm);transition:background .2s ease,transform .15s ease}
+.nav-cta:hover{background:var(--gold-strong)}
+.nav-cta:active{transform:scale(0.96)}
+.burger{display:none;background:none;border:0;width:40px;height:40px;position:relative}
+.burger span{position:absolute;left:8px;right:8px;height:2px;background:var(--text);transition:.3s}
+.burger span:nth-child(1){top:14px}.burger span:nth-child(2){top:20px}.burger span:nth-child(3){top:26px}
+.burger.open span:nth-child(1){top:20px;transform:rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0}
+.burger.open span:nth-child(3){top:20px;transform:rotate(-45deg)}
+.mobile-menu{position:fixed;inset:0;background:var(--bg);z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+.mobile-menu a{font-family:var(--font-display);font-size:1.8rem;color:var(--text)}
+
+/* ============ HERO ============ */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('img/hero-bg.png') center/cover no-repeat;filter:brightness(.55) saturate(.9)}
+.hero-scrim{position:absolute;inset:0;background:linear-gradient(180deg,oklch(0.16 0.008 60/0.6),oklch(0.16 0.008 60/0.92) 70%,var(--bg))}
+.hero-inner{position:relative;z-index:2;padding-block:120px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.8rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:28px}
+.hero-eyebrow::before{content:'';width:34px;height:1px;background:var(--gold)}
+.mask-line{display:block;overflow:hidden}
+.mask-line span{display:inline-block;transform:translateY(110%);transition:transform 1s cubic-bezier(0.2,0,0,1)}
+.mask-line.in span{transform:translateY(0)}
+.hero-title{font-family:var(--font-display);font-weight:900;font-size:clamp(2.6rem,7vw,5.4rem);line-height:1.05;letter-spacing:.01em;margin-bottom:28px}
+.hero-title .gold{color:var(--gold-strong);font-style:italic}
+.hero-sub{max-width:560px;font-size:1.12rem;color:var(--text-dim);line-height:1.6;margin-bottom:40px}
+.hero-actions{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.hero-stats{display:flex;gap:48px;margin-top:64px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column}
+.stat-num{font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:var(--gold-strong);line-height:1.1}
+.stat-label{font-size:.82rem;color:var(--text-dim);letter-spacing:.05em;text-transform:uppercase;margin-top:6px}
+
+/* ============ BUTTON (originkit: magnetic hover) ============ */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:1rem;padding:16px 32px;border-radius:var(--radius-sm);overflow:hidden;transition:background .25s ease,transform .15s ease;will-change:transform}
+.btn:active{transform:scale(0.96)}
+.btn-gold{background:var(--gold);color:oklch(0.16 0.02 60)}
+.btn-gold:hover{background:var(--gold-strong)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold-strong)}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* ============ SECTIONS ============ */
+.section{padding-block:96px;position:relative}
+.section-label{font-size:.78rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.section-title{font-family:var(--font-display);font-size:clamp(1.9rem,4vw,3rem);font-weight:700;line-height:1.12;margin-bottom:20px;max-width:20ch}
+.section-desc{color:var(--text-dim);max-width:60ch;line-height:1.6;margin-bottom:48px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,80px);align-items:center}
+
+/* ============ STAGGER RISE (originkit) ============ */
+.stagger{display:block;overflow:hidden}
+.stagger>span{display:inline-block;transform:translateY(110%);opacity:0;transition:transform .8s cubic-bezier(0.2,0,0,1),opacity .8s ease}
+.stagger.in>span{transform:translateY(0);opacity:1}
+
+/* ============ FEATURES ============ */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.feature{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-lg);padding:32px;transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}
+.feature:hover{transform:translateY(-4px);border-color:var(--gold-dim);box-shadow:var(--shadow-2)}
+.feature-icon{width:52px;height:52px;border-radius:var(--radius-md);background:oklch(0.30 0.03 70);display:grid;place-items:center;margin-bottom:22px;color:var(--gold-strong)}
+.feature-icon svg{width:24px;height:24px}
+.feature h3{font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-bottom:10px}
+.feature p{color:var(--text-dim);font-size:.95rem;line-height:1.55}
+
+/* ============ SERVICES ============ */
+.services{background:var(--bg-2)}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.service{background:var(--surface);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line-soft);transition:transform .3s ease,box-shadow .3s ease}
+.service:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.service:hover .service-img img{transform:scale(1.06)}
+.service-img{overflow:hidden;aspect-ratio:4/3}
+.service-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;filter:saturate(.95)}
+.service-body{padding:24px}
+.service-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
+.service-top h3{font-family:var(--font-display);font-size:1.25rem;font-weight:600}
+.service-price{font-weight:700;color:var(--gold-strong);white-space:nowrap}
+.service p{color:var(--text-dim);font-size:.92rem;line-height:1.5}
+
+/* ============ MASTERS ============ */
+.masters .split{grid-template-columns:1fr 1.4fr}
+.masters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.master{background:var(--surface);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line-soft);transition:transform .3s ease,box-shadow .3s ease}
+.master:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.master-img{overflow:hidden;aspect-ratio:1/1}
+.master-img img{width:100%;height:100%;object-fit:cover;filter:saturate(.92);transition:transform .6s ease}
+.master:hover .master-img img{transform:scale(1.05)}
+.master-body{padding:20px}
+.master-body h3{font-family:var(--font-display);font-weight:600;font-size:1.15rem}
+.master-role{font-size:.8rem;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-block:6px 8px}
+.master-body p{color:var(--text-dim);font-size:.9rem;line-height:1.5}
+
+/* ============ INKBLEED (originkit) ============ */
+.inkbleed{position:relative;overflow:hidden;border-radius:var(--radius-lg)}
+.inkbleed img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease}
+.inkbleed::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,transparent 40%,oklch(0.16 0.008 60/0.55) 100%);opacity:0;transition:opacity .5s ease}
+.inkbleed:hover::after{opacity:1}
+.showcase{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:280px;gap:20px}
+.showcase .inkbleed:nth-child(1){grid-row:span 2}
+
+/* ============ TESTIMONIALS ============ */
+.testimonials{background:var(--bg-2)}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.testi{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:16px}
+.testi-stars{color:var(--gold-strong);letter-spacing:.15em;font-size:1rem}
+.testi-text{color:var(--text);font-size:.98rem;line-height:1.6;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:12px;margin-top:auto}
+.testi-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none}
+.testi-avatar img{width:100%;height:100%;object-fit:cover}
+.testi-author strong{display:block;font-weight:600;font-size:.95rem}
+.testi-author span{font-size:.8rem;color:var(--text-dim)}
+
+/* ============ FAQ (accordion) ============ */
+.faq-list{max-width:760px;display:flex;flex-direction:column;gap:12px}
+.faq-item{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-md);overflow:hidden}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;font-weight:600;font-size:1rem;cursor:pointer;background:none;border:0;color:var(--text);width:100%;text-align:left}
+.faq-q .ic{font-size:1.4rem;color:var(--gold);transition:transform .3s ease;line-height:1}
+.faq-item.open .ic{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-a p{padding:0 24px 20px;color:var(--text-dim);line-height:1.6}
+
+/* ============ CTA ============ */
+.cta{text-align:center;padding-block:120px;position:relative;overflow:hidden}
+.cta-bg{position:absolute;inset:0;background:url('img/bg-cta.png') center/cover no-repeat;filter:brightness(.5)}
+.cta-scrim{position:absolute;inset:0;background:radial-gradient(ellipse at center,oklch(0.20 0.012 55/0.6),var(--bg))}
+.cta-inner{position:relative;z-index:2}
+.cta-title{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.4rem);font-weight:700;line-height:1.1;margin-bottom:20px}
+.cta-sub{color:var(--text-dim);font-size:1.1rem;margin-bottom:40px}
+.cta-note{margin-top:22px;font-size:.85rem;color:var(--text-dim);letter-spacing:.04em}
+
+/* ============ FOOTER ============ */
+.footer{border-top:1px solid var(--line-soft);padding-block:56px 40px;background:var(--bg-2)}
+.footer-inner{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}
+.footer-brand .logo{margin-bottom:14px;display:inline-block}
+.footer-brand p{color:var(--text-dim);font-size:.92rem;max-width:34ch;line-height:1.6}
+.footer-col h4{font-size:.8rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.footer-col a{display:block;color:var(--text-dim);font-size:.92rem;margin-bottom:10px;transition:color .2s ease}
+.footer-col a:hover{color:var(--gold-strong)}
+.footer-bottom{margin-top:48px;padding-top:24px;border-top:1px solid var(--line-soft);text-align:center;color:var(--text-dim);font-size:.85rem}
+
+/* ============ REVEAL (scroll) ============ */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(0.2,0,0,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:900px){
+  .site-nav{display:none}
+  .burger{display:block}
+  .split{grid-template-columns:1fr}
+  .masters .split{grid-template-columns:1fr}
+  .showcase{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr;gap:32px}
+  .hero-stats{gap:32px}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="header">
+  <div class="container header-inner">
+    <a href="#top" class="logo">BRUTUS<span>.</span></a>
+    <nav class="site-nav">
+      <a href="#services">Услуги</a>
+      <a href="#masters">Мастера</a>
+      <a href="#works">Работы</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#faq">Вопросы</a>
+      <a href="https://t.me/BRUTUS_barber_bot" target="_blank" rel="noopener" class="nav-cta">Записаться</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services">Услуги</a>
+  <a href="#masters">Мастера</a>
+  <a href="#works">Работы</a>
+  <a href="#reviews">Отзывы</a>
+  <a href="#faq">Вопросы</a>
+  <a href="https://t.me/BRUTUS_barber_bot" target="_blank" rel="noopener" class="btn btn-gold">Записаться</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-scrim"></div>
+  <div class="container hero-inner">
+    <span class="hero-eyebrow reveal">Премиальный барбершоп · Сызрань</span>
+    <h1 class="hero-title">
+      <span class="mask-line"><span>Мужество</span></span>
+      <span class="mask-line"><span>в каждой</span></span>
+      <span class="mask-line"><span class="gold">детали</span></span>
+    </h1>
+    <p class="hero-sub reveal">Стрижки, бритьё и уход за бородой. Только ручная работа, только острые лезвия, только настоящий стиль.</p>
+    <div class="hero-actions reveal">
+      <a href="https://t.me/BRUTUS_barber_bot" target="_blank" rel="noopener" class="btn btn-gold btn-magnetic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Записаться в Telegram
+      </a>
+      <a href="#services" class="btn btn-ghost">Наши услуги</a>
+    </div>
+    <div class="hero-stats reveal">
+      <div class="stat"><span class="stat-num">7+</span><span class="stat-label">Лет работы</span></div>
+      <div class="stat"><span class="stat-num">15k+</span><span class="stat-label">Стрижек</span></div>
+      <div class="stat"><span class="stat-num">4.9</span><span class="stat-label">Рейтинг</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="section-label reveal">Почему BRUTUS</div>
+    <h2 class="section-title"><span class="stagger"><span>Настоящая мужская работа</span></span></h2>
+    <div class="features-grid">
+      <div class="feature reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21l-2-2 2-2 2 2-2 2z"/><path d="M6 21l-2-2 2-2 2 2-2 2z"/><path d="M18 21l-2-2 2-2 2 2-2 2z"/><path d="M12 17l-2-2 2-2 2 2-2 2z"/><path d="M6 17l-2-2 2-2 2 2-2 2z"/><path d="M18 17l-2-2 2-2 2 2-2 2z"/></svg></div>
+        <h3>Ручная работа</h3>
+        <p>Никаких машинок — только ножницы и опасная бритва. Индивидуальный подход к форме головы и типу волос.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h4l11-11a2.8 2.8 0 0 0-4-4L4 14v4z"/><path d="M13 6l4 4"/></svg></div>
+        <h3>Мастерство бороды</h3>
+        <p>Оформление, коррекция, восстановление. Из неопрятной щетины — в произведение искусства.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v4H9z"/><path d="M12 7v4"/><path d="M8 21h8"/><path d="M10 21v-6h4v6"/><path d="M4 21h16"/></svg></div>
+        <h3>Атмосфера</h3>
+        <p>Виски, кожаные кресла, мужской разговор. У нас не просто стригут — отдыхают душой.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+        <h3>Быстро и удобно</h3>
+        <p>Запись в Telegram за 30 секунд. Напомним о визите. Среднее время ожидания — 5 минут.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="section services" id="services">
+  <div class="container">
+    <div class="section-label reveal">Наши услуги</div>
+    <h2 class="section-title"><span class="stagger"><span>Что мы делаем</span></span></h2>
+    <div class="services-grid">
+      <div class="service reveal">
+        <div class="service-img"><img src="img/service-1.png" alt="Мужская стрижка" loading="lazy"></div>
+        <div class="service-body">
+          <div class="service-top"><h3>Мужская стрижка</h3><span class="service-price">1 500 ₽</span></div>
+          <p>Классическая, модельная, спортивная — любой вариант под ваш стиль.</p>
+        </div>
+      </div>
+      <div class="service reveal">
+        <div class="service-img"><img src="img/service-2.png" alt="Оформление бороды" loading="lazy"></div>
+        <div class="service-body">
+          <div class="service-top"><h3>Оформление бороды</h3><span class="service-price">1 000 ₽</span></div>
+          <p>Моделирование, коррекция, уход. Чёткий контур и здоровая кожа.</p>
+        </div>
+      </div>
+      <div class="service reveal">
+        <div class="service-img"><img src="img/service-3.png" alt="Королевское бритьё" loading="lazy"></div>
+        <div class="service-body">
+          <div class="service-top"><h3>Королевское бритьё</h3><span class="service-price">2 000 ₽</span></div>
+          <p>Опасная бритва, горячее полотенце, премиум-пена. Абсолютное расслабление.</p>
+        </div>
+      </div>
+      <div class="service reveal">
+        <div class="service-img"><img src="img/service-6.png" alt="Стрижка + Борода" loading="lazy"></div>
+        <div class="service-body">
+          <div class="service-top"><h3>Стрижка + Борода</h3><span class="service-price">2 200 ₽</span></div>
+          <p>Полный комплекс: стрижка, оформление бороды и укладка.</p>
+        </div>
+      </div>
+      <div class="service reveal">
+        <div class="service-img"><img src="img/service-4.png" alt="Детская стрижка" loading="lazy"></div>
+        <div class="service-body">
+          <div class="service-top"><h3>Детская стрижка</h3><span class="service-price">1 200 ₽</span></div>
+          <p>Аккуратная стрижка для юных джентльменов до 12 лет.</p>
+        </div>
+      </div>
+      <div class="service reveal">
+        <div class="service-img"><img src="img/service-5.png" alt="Камуфляж седины" loading="lazy"></div>
+        <div class="service-body">
+          <div class="service-top"><h3>Камуфляж седины</h3><span class="service-price">1 500 ₽</span></div>
+          <p>Маскировка седины на висках и бороде. Натуральный результат.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MASTERS ============ -->
+<section class="section masters" id="masters">
+  <div class="container split">
+    <div>
+      <div class="section-label reveal">Наши мастера</div>
+      <h2 class="section-title"><span class="stagger"><span>Лучшие в своём деле</span></span></h2>
+      <p class="section-desc reveal">Каждый мастер BRUTUS — это годы практики, точность рук и понимание, что мужская стрижка — это характер. Познакомьтесь с теми, кому доверяют голову.</p>
+    </div>
+    <div class="masters-grid">
+      <div class="master reveal">
+        <div class="master-img"><img src="img/master-1.webp" alt="Артём" loading="lazy"></div>
+        <div class="master-body"><h3>Артём</h3><div class="master-role">Основатель · топ-барбер</div><p>12 лет опыта. Мастер спорта по ножницам.</p></div>
+      </div>
+      <div class="master reveal">
+        <div class="master-img"><img src="img/master-2.webp" alt="Дмитрий" loading="lazy"></div>
+        <div class="master-body"><h3>Дмитрий</h3><div class="master-role">Барбер-стилист</div><p>Сложные укладки и работа с бородой.</p></div>
+      </div>
+      <div class="master reveal">
+        <div class="master-img"><img src="img/master-3.webp" alt="Максим" loading="lazy"></div>
+        <div class="master-body"><h3>Максим</h3><div class="master-role">Барбер-универсал</div><p>Король классического бритья и переходов.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORKS (inkbleed) ============ -->
+<section class="section" id="works">
+  <div class="container">
+    <div class="section-label reveal">Наши работы</div>
+    <h2 class="section-title"><span class="stagger"><span>Результат говорит сам</span></span></h2>
+    <div class="showcase">
+      <div class="inkbleed reveal"><img src="img/work-1.png" alt="Работа барбера" loading="lazy"></div>
+      <div class="inkbleed reveal"><img src="img/work-2.png" alt="Стрижка" loading="lazy"></div>
+      <div class="inkbleed reveal"><img src="img/work-3.png" alt="Борода" loading="lazy"></div>
+      <div class="inkbleed reveal"><img src="img/work-4.png" alt="Бритьё" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="section testimonials" id="reviews">
+  <div class="container">
+    <div class="section-label reveal">Отзывы</div>
+    <h2 class="section-title"><span class="stagger"><span>Что говорят клиенты</span></span></h2>
+    <div class="testi-grid">
+      <div class="testi reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">«Лучший барбершоп в городе. Артём сделал идеальную стрижку, учёл все пожелания. Атмосфера — огонь!»</p>
+        <div class="testi-author"><div class="testi-avatar"><img src="img/master-1.webp" alt="Алексей"></div><div><strong>Алексей</strong><span>Клиент BRUTUS</span></div></div>
+      </div>
+      <div class="testi reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">«Королевское бритьё — отдельный вид искусства. Расслабляет так, что не хочется уходить. Обязательно вернусь!»</p>
+        <div class="testi-author"><div class="testi-avatar"><img src="img/master-2.webp" alt="Дмитрий"></div><div><strong>Дмитрий</strong><span>Постоянный гость</span></div></div>
+      </div>
+      <div class="testi reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">«Вожу сына на стрижку уже второй год. Ребёнок обожает Максима, а я ценю качество и подход. Спасибо, BRUTUS!»</p>
+        <div class="testi-author"><div class="testi-avatar"><img src="img/master-3.webp" alt="Сергей"></div><div><strong>Сергей</strong><span>Клиент с 2023</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-label reveal">FAQ</div>
+    <h2 class="section-title"><span class="stagger"><span>Частые вопросы</span></span></h2>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-q">Как записаться?<span class="ic">+</span></button>
+        <div class="faq-a"><p>Нажми «Записаться», перейди в Telegram-бота, выбери мастера, услугу, дату и время. Запись подтвердится, а за час до визита пришлём напоминание.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Можно ли прийти без записи?<span class="ic">+</span></button>
+        <div class="faq-a"><p>Можно, но по записи — гарантированное место и время. Без записи — как повезёт. Лучше забронировать.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Сколько длится стрижка?<span class="ic">+</span></button>
+        <div class="faq-a"><p>Мужская стрижка — 45–60 минут. Комплекс «Стрижка + Борода» — около 90 минут. Королевское бритьё — 45 минут.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Нужно ли мыть голову перед стрижкой?<span class="ic">+</span></button>
+        <div class="faq-a"><p>Мы вымоем и подготовим волосы перед работой — мытьё входит в услугу.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Работаете с детьми?<span class="ic">+</span></button>
+        <div class="faq-a"><p>Да, принимаем мальчиков от 5 лет. Специальные детские стрижки по доступным ценам.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section cta">
+  <div class="cta-bg"></div>
+  <div class="cta-scrim"></div>
+  <div class="container cta-inner">
+    <h2 class="cta-title"><span class="mask-line"><span>Готов к переменам?</span></span></h2>
+    <p class="cta-sub reveal">Запишись в Telegram за 30 секунд. Приходи, расслабься, уйди красивым.</p>
+    <div class="reveal">
+      <a href="https://t.me/BRUTUS_barber_bot" target="_blank" rel="noopener" class="btn btn-gold btn-lg btn-magnetic">
+        Записаться в Telegram
+      </a>
+    </div>
+    <p class="cta-note reveal">Работаем ежедневно 10:00–21:00 · @BRUTUS_barber_bot</p>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="#top" class="logo">BRUTUS<span>.</span></a>
+      <p>Барбершоп премиум-класса. Мужество в каждой детали. Сызрань, Поволжье.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Услуги</h4>
+      <a href="#services">Стрижки</a>
+      <a href="#services">Бритьё</a>
+      <a href="#services">Борода</a>
+    </div>
+    <div class="footer-col">
+      <h4>Инфо</h4>
+      <a href="#about">О нас</a>
+      <a href="#masters">Мастера</a>
+      <a href="#faq">Вопросы</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">© 2026 BRUTUS Barbershop · Запись: <a href="https://t.me/BRUTUS_barber_bot" style="color:var(--gold)">@BRUTUS_barber_bot</a></div>
+</footer>
+
+<script>
+// ============ MASK TEXT REVEAL (originkit) ============
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.mask-line span').forEach((el, i) => {
+    setTimeout(() => el.parentElement.classList.add('in'), 150 + i * 130);
+  });
+});
+
+// ============ STAGGER TEXT RISE (originkit) ============
+// Активируется из revealObserver (ниже) — когда блок заголовка попадает
+// в viewport, его stagger-спаны поднимаются с задержкой.
+function activateStagger(el) {
+  const st = el.querySelector('.stagger');
+  if (!st) return;
+  st.classList.add('in');
+  const spans = st.querySelectorAll('span');
+  spans.forEach((s, i) => { s.style.transitionDelay = (i * 90) + 'ms'; });
+}
+
+// ============ REVEAL (scroll) ============
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); activateStagger(e.target); revealObserver.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Fallback: активировать stagger в заголовках, которые уже в viewport при загрузке
+// + отдельный observer для .section-title (у них нет .reveal)
+const staggerTitleObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { activateStagger(e.target); staggerTitleObserver.unobserve(e.target); } });
+}, { threshold: 0.1 });
+function activateStaggerInView() {
+  const vh = window.innerHeight;
+  document.querySelectorAll('.stagger').forEach(st => {
+    if (!st.classList.contains('in')) {
+      const r = st.getBoundingClientRect();
+      if (r.top < vh && r.bottom > 0) {
+        st.classList.add('in');
+        st.querySelectorAll('span').forEach((s, i) => { s.style.transitionDelay = (i * 90) + 'ms'; });
+      }
+    }
+  });
+}
+window.addEventListener('load', activateStaggerInView);
+document.querySelectorAll('.section-title').forEach(el => staggerTitleObserver.observe(el));
+
+// ============ HEADER scrolled ============
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+// ============ MAGNETIC BUTTON (originkit) ============
+document.querySelectorAll('.btn-magnetic').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width / 2;
+    const y = e.clientY - r.top - r.height / 2;
+    btn.style.transform = `translate(${x * 0.15}px, ${y * 0.25}px)`;
+  });
+  btn.addEventListener('mouseleave', () => btn.style.transform = '');
+});
+
+// ============ CIRCLE CURSOR (originkit) ============
+const dot = document.querySelector('.cursor-dot');
+const ring = document.querySelector('.cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
+(function animate() {
+  rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animate);
+})();
+document.querySelectorAll('a,button,.service,.master,.feature').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('is-active'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('is-active'));
+});
+
+// ============ BURGER / mobile menu ============
+const burger = document.getElementById('burger');
+const mobileMenu = document.getElementById('mobileMenu');
+burger.addEventListener('click', () => {
+  burger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+});
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  burger.classList.remove('open'); mobileMenu.classList.remove('open');
+}));
+
+// ============ FAQ accordion ============
+document.querySelectorAll('.faq-item').forEach(item => {
+  const q = item.querySelector('.faq-q');
+  q.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = null; });
+    if (!isOpen) {
+      item.classList.add('open');
+      item.querySelector('.faq-a').style.maxHeight = item.querySelector('.faq-a').scrollHeight + 'px';
+    }
+  });
+});
+</script>
+</body>
+</html>
